@@ -1,3 +1,5 @@
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -52,3 +54,11 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# sqlite3
+todo.db
+db.sqlite3
+
+.DS_Store
+*.zip
+.vagrant
