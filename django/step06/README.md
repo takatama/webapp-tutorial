@@ -12,6 +12,14 @@
 - 公開用サーバを設定する。
 - 公開用サーバにデプロイする。
 
+## 前準備
+
+github からコンテンツを入手しておく。ローカルの適切なディレクトリで以下を実行する。
+
+```sh
+$ git clone https://github.com/tenshiPure/pyweb.git
+```
+
 ## ゲスト OS で Django を動かす（復習）。
 
 ゲスト OS で Django を動かすまでの処理は setup.sh に記載してある。Vagrantfile の provision shell に指定してあるので、vagrant up --provision としたときに sudo で実行されている。
@@ -40,10 +48,10 @@ cd /usr/local/src
 wget -q https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
 tar xvfz Python-2.7.8.tgz
 cd Python-2.7.8
-./configure --with-threads --enable-shared
+./configure --with-threads --enable-shared --enable-unicode=ucs4 --enable-ipv6
 make
 make altinstall
-echo '/usr/local/lib' > /etc/ld.so.conf.d/python2.7.conf
+sh -c "echo '/usr/local/lib' > /etc/ld.so.conf.d/python2.7.conf"
 ldconfig
 ln -s /usr/local/bin/python2.7 /usr/local/bin/python
 
@@ -185,6 +193,13 @@ Alias /static/ /vagrant/step06/todo/static/
 
 Web ブラウザーから [http://localhost:8080/story](http://localhost:8080/story) にアクセスして、Web アプリが使えることを確認する。
 
+もし、データベースが初期化されていない場合はエラーになる。データベースを初期化する。
+
+```sh
+[vagrant]$ cd /vagrant/step06
+[vagrant]$ ./magane.py syncdb
+```
+
 ## 公開用サーバを設定する。
 
 演習1: ssh でログインするので、鍵を作ってください。秘密鍵は厳重に管理してください。公開鍵と、公開用サーバで使いたいアカウント名(英字)を教えてください。
@@ -260,6 +275,7 @@ drwxr-xr-x 7 apache apache 4096 Oct 16 09:21 /var/www
 ```
 
 自分を apache グループに追加して、/var/www に書き込めるようにする。
+/var/www 以下に配備されるファイルやディレクトリの group を apache に固定するため sgid (set group id) しておく。
 
 ```sh
 [サーバ]$ sudo usermod -G apache <自分のアカウント>
@@ -267,8 +283,9 @@ cat /etc/group | grep apache
 apache:x:48:<自分のアカウント>
 
 [サーバ]$ sudo chmod -R g+w /var/www
+[サーバ]$ sudo chmod g+s /var/www
 [サーバ]$ ls -ld /var/www
-drwxrwxr-x 7 apache apache 4096 Oct 16 09:21 /var/www
+drwxrwsr-x 7 apache apache 4096 Oct 16 18:25 /var/www
 ```
 
 ### ローカルからサーバにデプロイする
@@ -336,3 +353,18 @@ total size is 988692  speedup is 705.70
 
 $ rsync -ru --exclude="*.sqlite3" --exclude="*.pyc" --exclude="*.md" step06 <IPアドレス>:/var/www
 ```
+
+その上で、公開サーバ上でデータベースを初期化する。sqlite3データベースファイルは、apache グループでの書き込みを許可しておく必要がある。
+
+```sh
+$ ssh <ユーザー名>@<IPアドレス>
+[サーバ]$ cd /var/www/step06
+[サーバ]$ ./manage.py syncdb
+[サーバ]$ sudo chmod g+w -R /var/www/step06
+```
+
+準備が完了したので、Webブラウザーからアクセスする。
+
+http://IPアドレス/story
+
+再デプロイは rsync だけで良い (./manage.py syncdb は不要)

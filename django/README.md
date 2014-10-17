@@ -1,11 +1,15 @@
-##step01
+##[Step01](/step01/)
 djangoアプリを作成して管理画面を操作してみましょう
-##step02
+##[Step02](/step02/)
 ストーリのCRUDをできるようにしてみましょう
-##step03
+##[Step03](/step03/)
 タスクのCRUDをできるようにしてみましょう
-##step04
+##[Step04](/step04/)
 見た目や挙動を整えてみましょう
+##[Step05](/step05/)
+Bootstrapを使って画面デザインを変えてみましょう
+##[Step06](/step06/)
+サーバを構築して動作させてみましょう
   
 ###django環境セットアップ
 Vagrantfileがあるディレクトリでvagrant up --provisionを実行する

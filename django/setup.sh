@@ -8,10 +8,10 @@ cd /usr/local/src
 wget -q https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
 tar xvfz Python-2.7.8.tgz
 cd Python-2.7.8
-./configure --with-threads --enable-shared
+./configure --with-threads --enable-shared --enable-unicode=ucs4 --enable-ipv6
 make
 make altinstall
-echo '/usr/local/lib' > /etc/ld.so.conf.d/python2.7.conf
+sh -c "echo '/usr/local/lib' > /etc/ld.so.conf.d/python2.7.conf"
 ldconfig
 ln -s /usr/local/bin/python2.7 /usr/local/bin/python
 
